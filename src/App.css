@@ -1,0 +1,10 @@
+.app{
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+button{
+  position: relative;
+  left: 0;
+  right: 0;
+}
