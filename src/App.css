@@ -3,8 +3,7 @@
   max-width: 1200px;
 }
 
-button{
+.app-wrapper{
+  display: flex;
   position: relative;
-  left: 0;
-  right: 0;
 }

@@ -1,14 +1,11 @@
 import React from 'react';
 import './Header.css';
-import Auth from '../Auth/Auth';
 
-const Header = () => {
-    return (
-        <div className="header" >
-            <h1>Vk authorization</h1>
-            <Auth />
-        </div>
-    )
+const Header = ({ userName, lastName }) => {
+    return <div className="header">
+        <h1>Vkontakte auhtorization</h1>
+        <li>{userName} {lastName}</li>
+    </div>
 }
 
 export default Header;

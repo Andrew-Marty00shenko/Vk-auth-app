@@ -1,12 +1,16 @@
 .header{
     width: 100%;
-    padding: 15px 10px;
-    background-color: rgb(70, 118, 180);
-    display: flex;
-    justify-content: center;
+    padding: 15px;
+    background-color: rgb(88, 146, 223);
+    text-align: center;
 }
 
-h1{
-    color:#fff;
-    line-height: 20px;
+.header h1{
+    color: #fff;
+}
+
+.header li{
+    color: #fff;
+    margin-top: 5px;
+    font-size: 25px;
 }

@@ -1,29 +1,98 @@
-import React, { useEffect } from 'react'
-import './App.css'
-import Header from './components/Header/Header'
-import { Route, useParams, useLocation } from 'react-router-dom'
-import Profile from './components/Profile/Profile'
-import Axios from 'axios'
+import React, { useState, useEffect, useCallback } from 'react';
+import './App.css';
+import { Route, useHistory } from 'react-router-dom';
+
+import Header from './components/Header/Header';
+import Navbar from './components/NavBar/Navbar';
+import Login from './components/Login/Login';
+import Profile from './components/Profile/Profile';
+import Friends from './components/Friends/Friends';
 
 const App = () => {
-  let location = useLocation();
+    const [userName, setUserName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [friends, setFriends] = useState([]);
+    const [loader, setLoader] = useState(false);
+    const history = useHistory();
 
-  console.log(location.hash.slice(14, 99))
+    useEffect(() => {
+        //eslint-disable-next-line no-undef
+        VK.Auth.getLoginStatus(res => {
+            if (res.status === 'connected') {
+                if (typeof (res.session.user) == 'undefined') {
+                    //eslint-disable-next-line no-undef
+                    VK.Api.call(
+                        'users.get',
+                        { uid: res.session.mid, v: '5.80' },
+                        r => {
+                            setUserName(r.response[0].first_name);
+                            setLastName(r.response[0].last_name);
+                            setIsLoggedIn(true);
+                            loadFriends();
+                            history.push("/profile");
+                        }
+                    )
+                }
+            }
 
-  useEffect(() => {
-    Axios.get(`https://api.vk.com/method/friends.search?access_token=${location.hash.slice(14, 99)}&v=5.52`)
-      .then(res => {
-        console.log(res)
-      })
-  }
-    , [])
+        })
+    }, [history]);
 
-  return (
-    <div className="app">
-      <Header />
-      <Route path="/profile" component={Profile} />
-    </div>
-  )
+    const handleClick = useCallback(() => {
+        //eslint-disable-next-line no-undef
+        return VK.Auth.login(res => {
+            if (res.session) {
+                const username = res.session.user.first_name;
+                const lastname = res.session.user.last_name;
+                // localStorage.setItem("token");
+                setUserName(username);
+                setLastName(lastname);
+                setIsLoggedIn(true);
+                loadFriends();
+                history.push("/profile");
+            }
+        }, 3);
+    }, [history]);
+
+    const loadFriends = () => {
+        setLoader(true);
+        //eslint-disable-next-line no-undef
+        VK.Api.call(
+            'friends.search',
+            { count: 5, fields: " photo_100", v: '5.80' },
+            res => {
+                setFriends(res.response.items);
+                setLoader(false);
+            }
+        )
+    }
+
+    return (
+        <div className="app">
+            <Header
+                userName={userName}
+                lastName={lastName}
+            />
+            <div className="app-wrapper">
+                <Navbar />
+                <Route path="/" render={() => <Login
+                    handleClick={handleClick}
+                    isLoggedIn={isLoggedIn}
+                />} />
+                <Route path="/profile" render={() => <Profile
+                    isLoggedIn={isLoggedIn}
+                    userName={userName}
+                    lastName={lastName}
+                />} />
+                <Route path="/friends" render={() => <Friends
+                    friends={friends}
+                    loader={loader}
+                    isLoggedIn={isLoggedIn}
+                />} />
+            </div>
+        </div>
+    )
 }
 
 export default App;

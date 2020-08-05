@@ -1,0 +1,14 @@
+.friends-list{
+    padding: 10px;
+}
+
+.friends-list img{
+    border-radius: 50%;
+}
+
+.friends-list span{
+    position: relative;
+    bottom: 40px;
+    left: 10px;
+    color: rgb(42, 104, 185);
+}
